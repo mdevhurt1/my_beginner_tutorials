@@ -1,7 +1,7 @@
 # my_beginner_tutorials
 
 ## Overview
-This pacakage contains the beginner tutorials for ROS 2 Humble assigned in the ROS 2 Programming Assignment 1 - Publisher/Subscriber assignment in ENPM 700 RO01 Fall 2025. The talker node publishes "Marcus' custom string message n" where n is a counter of the number of messages sent. The listener subscribes to topic and logs the messages it recieves.
+This pacakage contains the beginner tutorials for ROS 2 Humble assigned in the ROS 2 Programming Assignment 2 - Services, Logging, and Launch files assignment in ENPM 700 RO01 Fall 2025. The talker node publishes a custom message based on the service_flag_ and can be started/stopped via the publishing_flag parameter at launch. The listener subscribes to topic and logs the messages it recieves.
 
 ## Contributors
 Marcus Hurt
@@ -10,6 +10,8 @@ Marcus Hurt
 - ROS2 Humble
 
 ## Build/Run Steps
+Remember to source ROS and the overlay in any new terminals.
+
 ```bash
 # Source the ROS 2 underlay
 source /opt/ros/humble/setup.bash
@@ -28,11 +30,22 @@ colcon build
 # Source the overlay
 source install/local_setup.bash
 
-# Run the listener
-ros2 run beginner_tutorials listener
+# Run the talker node
+ros2 run beginner_tutorials talker_node
 
-# In a new terminal from the workspace root, source and run the talker
-source /opt/ros/humble/setup.bash
-source install/local_setup.bash
-ros2 run beginner_tutorials talker
+# Run the listener node
+ros2 run beginner_tutorials listener_node
+
+# Run the talker and listener from the launch file
+ros2 launch beginner_tutorials tutorial.launch.py
+
+# Run the talker and listener with cmd line modifications
+ros2 launch beginner_tutorials tutorial.launch.py publishing_flag:=false
+
+# Call the talker set_flag service
+ros2 service call /set_flag std_srvs/srv/SetBool {'data: true'}
 ```
+
+## Deliverables
+### rqt_console screenshot
+![rqt_console](screenshots/rqt_console.png)
