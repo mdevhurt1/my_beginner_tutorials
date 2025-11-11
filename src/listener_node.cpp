@@ -8,7 +8,7 @@
  * See the LICENSE file for license information.
  *
  * @copyright Copyright (c) 2025 Marcus Hurt
- * 
+ *
  */
 #include "beginner_tutorials/listener.hpp"
 #include "rclcpp/rclcpp.hpp"
