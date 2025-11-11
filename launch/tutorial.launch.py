@@ -12,7 +12,7 @@ def generate_launch_description():
         ),
         Node(
             package='beginner_tutorials',
-            executable='talker',
+            executable='talker_node',
             parameters=[{'publishing_flag': LaunchConfiguration('publishing_flag')}]
         )
     ])
