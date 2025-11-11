@@ -22,5 +22,6 @@ MyListener::MyListener() : Node("minimal_subscriber") {
 }
 
 void MyListener::topic_callback(const std_msgs::msg::String& msg) const {
-  RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg.data.c_str());
+  RCLCPP_INFO_STREAM(this->get_logger(),
+                     "I heard: '" << msg.data.c_str() << "'");
 }

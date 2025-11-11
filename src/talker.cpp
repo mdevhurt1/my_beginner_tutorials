@@ -63,7 +63,7 @@ void MyTalker::handle_set_flag_service(
   service_flag_ = request->data;
   response->success = true;
   response->message = service_flag_ ? "Service started." : "Service stopped.";
-  RCLCPP_INFO(this->get_logger(), response->message.c_str());
+  RCLCPP_INFO_STREAM(this->get_logger(), response->message.c_str());
 
   if (service_flag_) {
     RCLCPP_ERROR_STREAM(this->get_logger(), "Service flag set to true.");
