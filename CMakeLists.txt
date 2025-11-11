@@ -27,11 +27,21 @@ add_executable(talker_node src/talker_node.cpp)
 ament_target_dependencies(talker_node rclcpp)
 target_link_libraries(talker_node talker)
 
-add_executable(listener src/subscriber_member_function.cpp)
+add_library(listener src/listener.cpp)
 ament_target_dependencies(listener rclcpp std_msgs)
+
+target_include_directories(listener
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+
+add_executable(listener_node src/listener_node.cpp)
+ament_target_dependencies(listener_node rclcpp std_msgs)
+target_link_libraries(listener_node listener)
 
 install(TARGETS
   talker_node
+  listener_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -41,7 +51,7 @@ install(
 )
 
 install(
-  TARGETS talker
+  TARGETS talker listener
   EXPORT export_${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
