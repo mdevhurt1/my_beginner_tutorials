@@ -2,6 +2,7 @@
 
 #include "beginner_tutorials/talker.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include <string>
 
 using namespace std::chrono_literals;
 
@@ -13,6 +14,11 @@ MyTalker::MyTalker(): Node("minimal_publisher"), count_(0)
 
   this->get_parameter("publishing_flag", publishing_flag_);
 
+  service_ = this->create_service<std_srvs::srv::SetBool>(
+      "set_flag",
+      std::bind(&MyTalker::handle_set_flag_service, this,
+                std::placeholders::_1, std::placeholders::_2));
+
   timer_ = this->create_wall_timer(
       500ms, std::bind(&MyTalker::timer_callback, this));
 }
@@ -20,8 +26,22 @@ MyTalker::MyTalker(): Node("minimal_publisher"), count_(0)
 void MyTalker::timer_callback() {
   if (!publishing_flag_)
     return;
+
   auto message = std_msgs::msg::String();
-  message.data = "Marcus' custom string message " + std::to_string(count_++);
-  RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+  if (service_flag_) {
+    message.data = "Marcus' custom service flag true " + std::to_string(count_++);
+  } else {
+    message.data = "Marcus' custom service flag false " + std::to_string(count_++);
+  }
+  RCLCPP_INFO_STREAM(this->get_logger(), "Publishing: " << message.data.c_str());
   publisher_->publish(message);
+}
+
+void MyTalker::handle_set_flag_service(
+    const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+    std::shared_ptr<std_srvs::srv::SetBool::Response> response) {
+  service_flag_ = request->data;
+  response->success = true;
+  response->message = service_flag_ ? "Service started." : "Service stopped.";
+  RCLCPP_INFO(this->get_logger(), response->message.c_str());
 }
