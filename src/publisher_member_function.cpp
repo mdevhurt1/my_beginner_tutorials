@@ -29,17 +29,26 @@ class MinimalPublisher : public rclcpp::Node {
  public:
   MinimalPublisher() : Node("minimal_publisher"), count_(0) {
     publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
+
+    this->declare_parameter("publishing_flag", false);
+
+    this->get_parameter("publishing_flag", publishing_flag_);
+
     timer_ = this->create_wall_timer(
         500ms, std::bind(&MinimalPublisher::timer_callback, this));
   }
 
  private:
   void timer_callback() {
+    if (!publishing_flag_)
+      return;
     auto message = std_msgs::msg::String();
     message.data = "Marcus' custom string message " + std::to_string(count_++);
     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
     publisher_->publish(message);
   }
+
+  bool publishing_flag_;
   rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   size_t count_;
