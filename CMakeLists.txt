@@ -15,6 +15,9 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(catch_ros2 REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Enable compile_commands.json
 execute_process(COMMAND cmake -E create_symlink
@@ -50,7 +53,14 @@ if(BUILD_TESTING)
 endif()
 
 add_library(talker src/talker.cpp)
-ament_target_dependencies(talker rclcpp std_msgs std_srvs)
+ament_target_dependencies(talker 
+  rclcpp
+  std_msgs
+  std_srvs
+  tf2
+  tf2_ros
+  geometry_msgs
+)
 
 target_include_directories(talker
   PUBLIC

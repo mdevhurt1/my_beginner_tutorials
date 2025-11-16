@@ -18,10 +18,14 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/static_transform_broadcaster.h"
 
 class MyTalker : public rclcpp::Node {
  public:
@@ -48,10 +52,18 @@ class MyTalker : public rclcpp::Node {
       const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
       std::shared_ptr<std_srvs::srv::SetBool::Response> response);
 
+  /**
+   * @brief Make transforms for the static broadcaster
+   *
+   * @param transformation {x, y, z, roll, pitch, yaw}
+   */
+  void make_transforms(std::vector<double> transformation);
+
   bool publishing_flag_;
   bool service_flag_;
   rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr service_;
+  std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_static_broadcaster_;
   size_t count_;
 };

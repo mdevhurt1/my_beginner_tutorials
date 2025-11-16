@@ -36,6 +36,12 @@ MyTalker::MyTalker() : Node("minimal_publisher"), count_(0) {
 
   timer_ = this->create_wall_timer(500ms,
                                    std::bind(&MyTalker::timer_callback, this));
+
+  tf_static_broadcaster_ =
+      std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+
+  std::vector<double> transformation = {0, 0, 1, 0, 0, 1};
+  this->make_transforms(transformation);
 }
 
 void MyTalker::timer_callback() {
@@ -70,4 +76,25 @@ void MyTalker::handle_set_flag_service(
   } else {
     RCLCPP_FATAL_STREAM(this->get_logger(), "Service flag set to false.");
   }
+}
+
+void MyTalker::make_transforms(std::vector<double> transformation) {
+  geometry_msgs::msg::TransformStamped static_transform_stamped;
+
+  static_transform_stamped.header.stamp = this->now();
+  static_transform_stamped.header.frame_id = "world";
+  static_transform_stamped.child_frame_id = "talk";
+
+  static_transform_stamped.transform.translation.x = transformation[0];
+  static_transform_stamped.transform.translation.y = transformation[1];
+  static_transform_stamped.transform.translation.z = transformation[2];
+
+  tf2::Quaternion quat;
+  quat.setRPY(transformation[3], transformation[4], transformation[5]);
+  static_transform_stamped.transform.rotation.x = quat.x();
+  static_transform_stamped.transform.rotation.y = quat.y();
+  static_transform_stamped.transform.rotation.z = quat.z();
+  static_transform_stamped.transform.rotation.w = quat.w();
+
+  tf_static_broadcaster_->sendTransform(static_transform_stamped);
 }
